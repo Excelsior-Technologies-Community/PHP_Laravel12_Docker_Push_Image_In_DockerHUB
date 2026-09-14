@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -23,7 +22,6 @@
     >
 
     <style>
-
         body {
             background: #f4f6f9;
         }
@@ -34,24 +32,24 @@
                 #212529,
                 #343a40
             );
-
             color: white;
-
             border-radius: 16px;
-
             padding: 30px;
-
             margin-bottom: 25px;
         }
 
-        .stat-card {
+        .stat-card,
+        .info-card,
+        .health-card,
+        .table-card,
+        .resource-card {
             border: 0;
-
             border-radius: 15px;
-
             box-shadow:
                 0 5px 20px rgba(0, 0, 0, 0.06);
+        }
 
+        .stat-card {
             transition: 0.2s;
         }
 
@@ -59,116 +57,169 @@
             transform: translateY(-3px);
         }
 
-        .info-card {
-            border: 0;
-
-            border-radius: 15px;
-
-            box-shadow:
-                0 5px 20px rgba(0, 0, 0, 0.06);
-
-            margin-bottom: 25px;
-        }
-
         .health-card {
-            border: 0;
-
-            border-radius: 15px;
-
-            box-shadow:
-                0 5px 20px rgba(0, 0, 0, 0.06);
-
             height: 100%;
         }
 
         .health-icon {
             width: 50px;
-
             height: 50px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             border-radius: 12px;
-
             font-size: 22px;
         }
 
         .healthy {
             background: #d1e7dd;
-
             color: #0f5132;
         }
 
         .warning {
             background: #fff3cd;
-
             color: #664d03;
         }
 
         .failed {
             background: #f8d7da;
-
             color: #842029;
         }
 
         .docker-badge {
             font-size: 14px;
-
             padding: 8px 12px;
-
             border-radius: 30px;
-        }
-
-        .table-card {
-            border: 0;
-
-            border-radius: 15px;
-
-            box-shadow:
-                0 5px 20px rgba(0, 0, 0, 0.06);
         }
 
         .small-label {
             color: #6c757d;
-
             font-size: 13px;
-
             font-weight: 600;
-
             text-transform: uppercase;
         }
 
         .value-text {
             font-weight: 600;
-
             word-break: break-word;
         }
 
         .code-value {
             font-family: monospace;
-
             background: #f1f3f5;
-
             padding: 4px 8px;
-
             border-radius: 5px;
+            font-size: 13px;
+            word-break: break-word;
+        }
 
+        .score-circle {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: #f8f9fa;
+            border: 10px solid #198754;
+        }
+
+        .score-number {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .resource-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .auto-refresh {
             font-size: 13px;
         }
 
-    </style>
+        /* =========================================================
+           NUMERIC-ONLY PAGINATION
+           ========================================================= */
 
+        .numeric-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .numeric-pagination .page-item {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .numeric-pagination .page-link {
+            min-width: 40px;
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 0 12px;
+
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+
+            background: #ffffff;
+            color: #212529;
+
+            text-decoration: none;
+            font-weight: 600;
+
+            transition: all 0.2s ease;
+        }
+
+        .numeric-pagination .page-link:hover {
+            background: #f1f3f5;
+            color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .numeric-pagination .page-item.active .page-link {
+            background: #0d6efd;
+            border-color: #0d6efd;
+            color: #ffffff;
+        }
+
+        .numeric-pagination .page-item.disabled {
+            display: none !important;
+        }
+
+        /* Hide Laravel/bootstrap generated arrows/text if any */
+        .numeric-pagination .page-item:first-child,
+        .numeric-pagination .page-item:last-child {
+            display: list-item;
+        }
+
+        .pagination-info {
+            text-align: center;
+            color: #6c757d;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="container-fluid py-4">
 
-    {{-- Header --}}
+    {{-- ========================================================= --}}
+    {{-- HEADER --}}
+    {{-- ========================================================= --}}
 
     <div class="dashboard-header">
 
@@ -186,13 +237,14 @@
 
                 <p class="mb-0 text-white-50">
 
-                    Monitor your Laravel application and Docker runtime.
+                    Monitor Laravel, Docker, database, cache,
+                    storage and server resources.
 
                 </p>
 
             </div>
 
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 flex-wrap">
 
                 <form
                     method="POST"
@@ -230,7 +282,9 @@
     </div>
 
 
-    {{-- Flash Message --}}
+    {{-- ========================================================= --}}
+    {{-- FLASH MESSAGE --}}
+    {{-- ========================================================= --}}
 
     @if(session('success'))
 
@@ -251,7 +305,83 @@
     @endif
 
 
-    {{-- Statistics --}}
+    {{-- ========================================================= --}}
+    {{-- HEALTH SCORE --}}
+    {{-- ========================================================= --}}
+
+    <div class="card info-card mb-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-3 text-center">
+
+                    <div
+                        class="score-circle mx-auto"
+                        style="border-color:
+                            {{ $healthScore >= 90
+                                ? '#198754'
+                                : ($healthScore >= 70
+                                    ? '#ffc107'
+                                    : '#dc3545') }}"
+                    >
+
+                        <div class="score-number">
+
+                            {{ $healthScore }}%
+
+                        </div>
+
+                        <small>Health</small>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    <h4>
+                        Overall System Health
+                    </h4>
+
+                    <p class="text-muted mb-2">
+
+                        Current system status:
+
+                        <span class="badge bg-{{ $healthStatusClass }}">
+
+                            {{ $healthStatus }}
+
+                        </span>
+
+                    </p>
+
+                    <div
+                        class="progress"
+                        style="height: 12px;"
+                    >
+
+                        <div
+                            class="progress-bar bg-{{ $healthStatusClass }}"
+                            role="progressbar"
+                            style="width: {{ $healthScore }}%"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- ========================================================= --}}
+    {{-- STATISTICS --}}
+    {{-- ========================================================= --}}
 
     <div class="row g-4 mb-4">
 
@@ -305,7 +435,9 @@
                             </div>
 
                             <h2 class="mt-2 mb-0 text-success">
+
                                 {{ $statistics['healthy_checks'] }}
+
                             </h2>
 
                         </div>
@@ -340,7 +472,9 @@
                             </div>
 
                             <h2 class="mt-2 mb-0 text-warning">
+
                                 {{ $statistics['warning_checks'] }}
+
                             </h2>
 
                         </div>
@@ -375,7 +509,9 @@
                             </div>
 
                             <h2 class="mt-2 mb-0 text-danger">
+
                                 {{ $statistics['failed_checks'] }}
+
                             </h2>
 
                         </div>
@@ -397,9 +533,167 @@
     </div>
 
 
-    {{-- Docker Information --}}
+    {{-- ========================================================= --}}
+    {{-- SERVER RESOURCES --}}
+    {{-- ========================================================= --}}
 
-    <div class="card info-card">
+    <div class="card resource-card mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="mb-0">
+
+                <i class="bi bi-pc-display me-2"></i>
+
+                Server Resources
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-3">
+
+                    <div class="small-label">
+                        Disk Total
+                    </div>
+
+                    <div class="resource-value mt-2">
+
+                        {{ $resources['disk_total'] }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="small-label">
+                        Disk Used
+                    </div>
+
+                    <div class="resource-value mt-2">
+
+                        {{ $resources['disk_used'] }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="small-label">
+                        Disk Free
+                    </div>
+
+                    <div class="resource-value mt-2 text-success">
+
+                        {{ $resources['disk_free'] }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="small-label">
+                        Disk Usage
+                    </div>
+
+                    <div class="resource-value mt-2">
+
+                        @if($resources['disk_usage_percent'] !== null)
+
+                            {{ $resources['disk_usage_percent'] }}%
+
+                        @else
+
+                            N/A
+
+                        @endif
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="small-label">
+                        PHP Memory Usage
+                    </div>
+
+                    <div class="resource-value mt-2">
+
+                        {{ $resources['memory_usage'] }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="small-label">
+                        PHP Peak Memory
+                    </div>
+
+                    <div class="resource-value mt-2">
+
+                        {{ $resources['memory_peak'] }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="small-label">
+                        PHP Memory Limit
+                    </div>
+
+                    <div class="resource-value mt-2">
+
+                        {{ $resources['memory_limit'] }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <div class="small-label">
+                        Server Software
+                    </div>
+
+                    <div class="mt-2 value-text">
+
+                        {{ $resources['server_software'] }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- ========================================================= --}}
+    {{-- DOCKER INFORMATION --}}
+    {{-- ========================================================= --}}
+
+    <div class="card info-card mb-4">
 
         <div class="card-header bg-white py-3">
 
@@ -567,9 +861,11 @@
     </div>
 
 
-    {{-- Application Information --}}
+    {{-- ========================================================= --}}
+    {{-- APPLICATION INFORMATION --}}
+    {{-- ========================================================= --}}
 
-    <div class="card info-card">
+    <div class="card info-card mb-4">
 
         <div class="card-header bg-white py-3">
 
@@ -612,7 +908,8 @@
 
                         <span class="badge bg-danger">
 
-                            Laravel {{ $application['laravel_version'] }}
+                            Laravel
+                            {{ $application['laravel_version'] }}
 
                         </span>
 
@@ -631,7 +928,8 @@
 
                         <span class="badge bg-primary">
 
-                            PHP {{ $application['php_version'] }}
+                            PHP
+                            {{ $application['php_version'] }}
 
                         </span>
 
@@ -667,10 +965,12 @@
 
                     <div class="mt-2">
 
-                        <span class="badge
-                        {{ $application['debug'] === 'Enabled'
-                            ? 'bg-warning text-dark'
-                            : 'bg-success' }}">
+                        <span
+                            class="badge
+                            {{ $application['debug'] === 'Enabled'
+                                ? 'bg-warning text-dark'
+                                : 'bg-success' }}"
+                        >
 
                             {{ $application['debug'] }}
 
@@ -732,7 +1032,9 @@
     </div>
 
 
-    {{-- Health Checks --}}
+    {{-- ========================================================= --}}
+    {{-- HEALTH CHECK CARDS --}}
+    {{-- ========================================================= --}}
 
     <div class="row g-4 mb-4">
 
@@ -746,8 +1048,10 @@
 
                         <div class="d-flex align-items-center mb-3">
 
-                            <div class="health-icon
-                                {{ $check['status'] }} me-3">
+                            <div
+                                class="health-icon
+                                {{ $check['status'] }} me-3"
+                            >
 
                                 @if($check['status'] === 'healthy')
 
@@ -773,14 +1077,16 @@
 
                                 </h6>
 
-                                <span class="badge
+                                <span
+                                    class="badge
                                     @if($check['status'] === 'healthy')
                                         bg-success
                                     @elseif($check['status'] === 'warning')
                                         bg-warning text-dark
                                     @else
                                         bg-danger
-                                    @endif">
+                                    @endif"
+                                >
 
                                     {{ strtoupper($check['status']) }}
 
@@ -835,13 +1141,15 @@
     </div>
 
 
-    {{-- Activity Logs --}}
+    {{-- ========================================================= --}}
+    {{-- HEALTH ACTIVITY LOG --}}
+    {{-- ========================================================= --}}
 
     <div class="card table-card">
 
         <div class="card-header bg-white py-3">
 
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
                 <h5 class="mb-0">
 
@@ -851,21 +1159,212 @@
 
                 </h5>
 
+                <div class="auto-refresh text-muted">
+
+                    <i class="bi bi-arrow-repeat"></i>
+
+                    Auto refresh:
+
+                    <strong id="countdown">
+                        30
+                    </strong>
+
+                    sec
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- ========================================================= --}}
+        {{-- SEARCH / FILTER --}}
+        {{-- ========================================================= --}}
+
+        <div class="card-body border-bottom">
+
+            <form
+                method="GET"
+                action="{{ route('system.health') }}"
+                class="row g-3"
+            >
+
+                <div class="col-md-5">
+
+                    <label class="form-label">
+                        Search Logs
+                    </label>
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        placeholder="Search check type or message..."
+                        value="{{ $search }}"
+                    >
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Status
+                    </label>
+
+                    <select
+                        name="status"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            All Statuses
+                        </option>
+
+                        <option
+                            value="healthy"
+                            @selected($status == 'healthy')
+                        >
+                            Healthy
+                        </option>
+
+                        <option
+                            value="warning"
+                            @selected($status == 'warning')
+                        >
+                            Warning
+                        </option>
+
+                        <option
+                            value="failed"
+                            @selected($status == 'failed')
+                        >
+                            Failed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-4 d-flex align-items-end gap-2">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+
+                        <i class="bi bi-search me-1"></i>
+
+                        Search
+
+                    </button>
+
+
+                    <a
+                        href="{{ route('system.health') }}"
+                        class="btn btn-outline-secondary"
+                    >
+                        Reset
+                    </a>
+
+
+                    <a
+                        href="{{ route(
+                            'system.health.logs.export',
+                            request()->query()
+                        ) }}"
+                        class="btn btn-success"
+                    >
+
+                        <i class="bi bi-filetype-csv me-1"></i>
+
+                        CSV
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        {{-- ========================================================= --}}
+        {{-- CLEANUP --}}
+        {{-- ========================================================= --}}
+
+        <div class="card-body border-bottom">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                <div>
+
+                    <strong>
+                        Log Management
+                    </strong>
+
+                    <div class="text-muted small">
+
+                        Remove old health activity records.
+
+                    </div>
+
+                </div>
+
+
                 <form
                     method="POST"
-                    action="{{ route('system.health.logs.clear') }}"
-                    onsubmit="return confirm('Clear all health activity logs?')"
+                    action="{{ route('system.health.logs.cleanup') }}"
+                    class="d-flex gap-2"
                 >
 
                     @csrf
 
                     @method('DELETE')
 
-                    <button class="btn btn-sm btn-outline-danger">
+                    <select
+                        name="days"
+                        class="form-select"
+                    >
+
+                        <option value="7">
+                            Older than 7 days
+                        </option>
+
+                        <option value="15">
+                            Older than 15 days
+                        </option>
+
+                        <option
+                            value="30"
+                            selected
+                        >
+                            Older than 30 days
+                        </option>
+
+                        <option value="60">
+                            Older than 60 days
+                        </option>
+
+                        <option value="90">
+                            Older than 90 days
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        class="btn btn-outline-danger"
+                        onclick="return confirm(
+                            'Delete old health logs?'
+                        )"
+                    >
 
                         <i class="bi bi-trash me-1"></i>
 
-                        Clear Logs
+                        Cleanup
 
                     </button>
 
@@ -874,6 +1373,11 @@
             </div>
 
         </div>
+
+
+        {{-- ========================================================= --}}
+        {{-- TABLE --}}
+        {{-- ========================================================= --}}
 
         <div class="card-body p-0">
 
@@ -912,7 +1416,9 @@
                                 <td>
 
                                     <strong>
+
                                         {{ $log->check_type }}
+
                                     </strong>
 
                                 </td>
@@ -922,19 +1428,25 @@
                                     @if($log->status === 'healthy')
 
                                         <span class="badge bg-success">
+
                                             Healthy
+
                                         </span>
 
                                     @elseif($log->status === 'warning')
 
                                         <span class="badge bg-warning text-dark">
+
                                             Warning
+
                                         </span>
 
                                     @else
 
                                         <span class="badge bg-danger">
+
                                             Failed
+
                                         </span>
 
                                     @endif
@@ -949,7 +1461,9 @@
 
                                 <td>
 
-                                    {{ $log->checked_at?->format('d M Y, h:i:s A') }}
+                                    {{ $log->checked_at?->format(
+                                        'd M Y, h:i:s A'
+                                    ) }}
 
                                 </td>
 
@@ -964,7 +1478,7 @@
                                     class="text-center text-muted py-4"
                                 >
 
-                                    No health activity recorded yet.
+                                    No health activity found.
 
                                 </td>
 
@@ -980,6 +1494,79 @@
 
         </div>
 
+
+        {{-- ========================================================= --}}
+        {{-- NUMERIC-ONLY PAGINATION --}}
+        {{-- IMPORTANT: DO NOT USE $recentLogs->links() HERE --}}
+        {{-- ========================================================= --}}
+
+        @if($recentLogs->hasPages())
+
+            <div class="card-footer bg-white">
+
+                <nav aria-label="Health activity pagination">
+
+                    <ul class="numeric-pagination">
+
+                        @for(
+                            $page = 1;
+                            $page <= $recentLogs->lastPage();
+                            $page++
+                        )
+
+                            <li
+                                class="page-item
+                                {{ $page == $recentLogs->currentPage()
+                                    ? 'active'
+                                    : '' }}"
+                            >
+
+                                <a
+                                    class="page-link"
+                                    href="{{ $recentLogs->url($page) }}"
+                                >
+
+                                    {{ $page }}
+
+                                </a>
+
+                            </li>
+
+                        @endfor
+
+                    </ul>
+
+                </nav>
+
+
+                <div class="pagination-info">
+
+                    Showing
+
+                    <strong>
+                        {{ $recentLogs->firstItem() }}
+                    </strong>
+
+                    to
+
+                    <strong>
+                        {{ $recentLogs->lastItem() }}
+                    </strong>
+
+                    of
+
+                    <strong>
+                        {{ $recentLogs->total() }}
+                    </strong>
+
+                    results
+
+                </div>
+
+            </div>
+
+        @endif
+
     </div>
 
 </div>
@@ -989,6 +1576,36 @@
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
 
+
+<script>
+
+    /* =========================================================
+       AUTO REFRESH
+       ========================================================= */
+
+    let countdown = 30;
+
+    const countdownElement =
+        document.getElementById('countdown');
+
+    setInterval(function () {
+
+        countdown--;
+
+        countdownElement.textContent =
+            countdown;
+
+        if (countdown <= 0) {
+
+            window.location.reload();
+
+        }
+
+    }, 1000);
+
+</script>
+
 </body>
 
 </html>
+
